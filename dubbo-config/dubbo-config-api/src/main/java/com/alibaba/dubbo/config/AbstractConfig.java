@@ -84,9 +84,16 @@ public abstract class AbstractConfig implements Serializable {
         legacyProperties.put("dubbo.consumer.check", "dubbo.service.allow.no.provider");
         legacyProperties.put("dubbo.service.url", "dubbo.service.address");
     }
-    
+
+    /**
+     * 对特殊属性值进行转换处理
+     *
+     * @param key 属性名称
+     * @param value 属性值
+     * @return 转换后的值
+     */
     private static String convertLegacyValue(String key, String value) {
-        if (value != null && value.length() > 0) {
+        if (StringUtils.isNoBlank(value)) {
             if ("dubbo.service.max.retry.providers".equals(key)) {
                 return String.valueOf(Integer.parseInt(value) - 1);
             } else if ("dubbo.service.allow.no.provider".equals(key)) {
@@ -427,14 +434,28 @@ public abstract class AbstractConfig implements Serializable {
             checkNameHasSymbol(entry.getKey(), entry.getValue());
         }
     }
-    
+
+    /**
+     * 属性校验方法
+     *
+     * @param property 属性名称
+     * @param value 具体值
+     * @param maxlength 最大长度
+     * @param pattern 值的匹配模式
+     */
     protected static void checkProperty(String property, String value, int maxlength, Pattern pattern) {
-        if (value == null || value.length() == 0) {
+        // 如果属性值为空，则返回
+        if (StringUtils.isBlank(value)) {
             return;
         }
+
+        // 如果超过最大字符长度，则抛运行时异常
         if(value.length() > maxlength){
+            // RuntimeException
             throw new IllegalStateException("Invalid " + property + "=\"" + value + "\" is longer than " + maxlength);
         }
+
+        // 模式匹配验证
         if (pattern != null) {
             Matcher matcher = pattern.matcher(value);
             if(! matcher.matches()) {

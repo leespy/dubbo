@@ -121,6 +121,12 @@ public final class Version {
 		checkDuplicate(cls, false);
 	}
 
+    /**
+     * 查询在ClassPath下的path路径里，是否存在相同名称的class文件
+     *
+     * @param path class的绝对地址 例如："/Users/lijinlong02/alibaba/dubbo/dubbo-common/target/test-classes/com/alibaba/dubbo/common/URLTest.class"
+     * @param failOnError true：抛出异常  false：只打印错误日志
+     */
 	public static void checkDuplicate(String path, boolean failOnError) {
 		try {
 			// 在ClassPath搜文件
@@ -129,12 +135,13 @@ public final class Version {
 			while (urls.hasMoreElements()) {
 				URL url = urls.nextElement();
 				if (url != null) {
-					String file = url.getFile();
+					String file = url.getFile(); // 得到.class文件的绝对路径字符串
 					if (file != null && file.length() > 0) {
 						files.add(file);
 					}
 				}
 			}
+
 			// 如果有多个，就表示重复
 			if (files.size() > 1) {
                 String error = "Duplicate class " + path + " in " + files.size() + " jar " + files;

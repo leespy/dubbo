@@ -37,7 +37,10 @@ public class URLTest {
 
     @Test
     public void test_valueOf_noProtocolAndHost() throws Exception {
+        URLTest.class.getName(); // com.alibaba.dubbo.common.URLTest
+        Class.forName("com.alibaba.dubbo.common.URLTest");
         URL url = URL.valueOf("/context/path?version=1.0.0&application=morgan");
+
         assertNull(url.getProtocol());
         assertNull(url.getUsername());
         assertNull(url.getPassword());
