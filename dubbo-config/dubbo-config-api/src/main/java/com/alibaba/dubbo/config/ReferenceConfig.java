@@ -51,7 +51,7 @@ import com.alibaba.dubbo.rpc.service.GenericService;
 import com.alibaba.dubbo.rpc.support.ProtocolUtils;
 
 /**
- * ReferenceConfig
+ * ReferenceConfig 要请求使用的服务接口
  * 
  * @author william.liangf
  * @export

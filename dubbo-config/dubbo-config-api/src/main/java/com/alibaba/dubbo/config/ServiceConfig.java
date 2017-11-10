@@ -49,7 +49,7 @@ import com.alibaba.dubbo.rpc.service.GenericService;
 import com.alibaba.dubbo.rpc.support.ProtocolUtils;
 
 /**
- * ServiceConfig
+ * ServiceConfig 需要对外暴露的服务接口
  * 
  * @author william.liangf
  * @export

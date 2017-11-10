@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Reference
+ * Reference 引用/消费服务注解
  * 
  * @author william.liangf
  * @export
@@ -32,14 +32,19 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD})
 public @interface Reference {
 
+    // 接口Class
     Class<?> interfaceClass() default void.class;
 
+    // 接口名称
     String interfaceName() default "";
 
+    // 版本
     String version() default "";
 
+    // 组
     String group() default "";
 
+    // url
     String url() default "";
 
     String client() default "";

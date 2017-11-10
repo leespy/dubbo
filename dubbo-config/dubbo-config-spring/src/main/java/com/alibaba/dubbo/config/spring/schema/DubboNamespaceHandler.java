@@ -43,16 +43,43 @@ public class DubboNamespaceHandler extends NamespaceHandlerSupport {
 	}
 
 	public void init() {
+        /**
+         * 提供方应用信息,用于计算依赖关系
+         * <dubbo:application name="hello-world-app"  />
+         */
 	    registerBeanDefinitionParser("application", new DubboBeanDefinitionParser(ApplicationConfig.class, true));
-        registerBeanDefinitionParser("module", new DubboBeanDefinitionParser(ModuleConfig.class, true));
+
+        /**
+         * 注册中心暴露服务地址
+         * <dubbo:registry address="zookeeper://10.211.55.3:2181" />
+         */
         registerBeanDefinitionParser("registry", new DubboBeanDefinitionParser(RegistryConfig.class, true));
+
+        /**
+         * 用dubbo协议在20880端口暴露服务
+         * <dubbo:protocol name="dubbo" port="20880" />
+         */
+        registerBeanDefinitionParser("protocol", new DubboBeanDefinitionParser(ProtocolConfig.class, true));
+
+        /**
+         * 声明需要暴露的服务接口(provider)，当一个接口有多种实现时，可以用group区分
+         * <dubbo:service group="demo1" interface="service.DemoService" ref="demoServiceImpl1" />
+         * <dubbo:service group="demo2" interface="service.DemoService" ref="demoServiceImpl2" />
+         */
+        registerBeanDefinitionParser("service", new DubboBeanDefinitionParser(ServiceBean.class, true)); // ServiceBean.class
+
+        /**
+         * 生成远程服务代理，可以和本地bean一样使用demoService(consumer)，消费任意一个group的服务
+         * <dubbo:reference id="demoService" interface="service.DemoService" group="*"/>
+         */
+        registerBeanDefinitionParser("reference", new DubboBeanDefinitionParser(ReferenceBean.class, false)); // ReferenceBean.class
+
+
+        registerBeanDefinitionParser("module", new DubboBeanDefinitionParser(ModuleConfig.class, true));
         registerBeanDefinitionParser("monitor", new DubboBeanDefinitionParser(MonitorConfig.class, true));
         registerBeanDefinitionParser("provider", new DubboBeanDefinitionParser(ProviderConfig.class, true));
         registerBeanDefinitionParser("consumer", new DubboBeanDefinitionParser(ConsumerConfig.class, true));
-        registerBeanDefinitionParser("protocol", new DubboBeanDefinitionParser(ProtocolConfig.class, true));
-        registerBeanDefinitionParser("service", new DubboBeanDefinitionParser(ServiceBean.class, true));
-        registerBeanDefinitionParser("reference", new DubboBeanDefinitionParser(ReferenceBean.class, false));
-        registerBeanDefinitionParser("annotation", new DubboBeanDefinitionParser(AnnotationBean.class, true));
+        registerBeanDefinitionParser("annotation", new DubboBeanDefinitionParser(AnnotationBean.class, true)); // AnnotationBean.class
     }
 
 }

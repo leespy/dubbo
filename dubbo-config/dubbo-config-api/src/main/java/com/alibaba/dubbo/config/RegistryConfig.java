@@ -22,7 +22,7 @@ import com.alibaba.dubbo.config.support.Parameter;
 import com.alibaba.dubbo.registry.support.AbstractRegistryFactory;
 
 /**
- * RegistryConfig
+ * RegistryConfig 注册中心
  * 
  * @author william.liangf
  * @export

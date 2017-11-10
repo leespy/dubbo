@@ -56,10 +56,10 @@ public abstract class AbstractReferenceConfig extends AbstractInterfaceConfig {
     //stub是否支持event事件. //TODO slove merge problem 
     protected Boolean             stubevent ;//= Constants.DEFAULT_STUB_EVENT;
 
-    // 版本
+    // 版本（当一个接口的实现，出现不兼容升级时，可以用版本号过渡，版本号不同的服务相互间不引用）
     protected String               version;
 
-    // 服务分组
+    // 服务分组（当一个接口有多种实现时，可以用group区分）
     protected String               group;
 
     public Boolean isCheck() {

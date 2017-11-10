@@ -50,6 +50,7 @@ import com.alibaba.dubbo.config.RegistryConfig;
 import com.alibaba.dubbo.config.ServiceConfig;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
+import com.sun.xml.internal.xsom.impl.ListSimpleTypeImpl;
 
 /**
  * AnnotationBean
@@ -69,6 +70,7 @@ public class AnnotationBean extends AbstractConfig implements DisposableBean, Be
 
     private final Set<ServiceConfig<?>> serviceConfigs = new ConcurrentHashSet<ServiceConfig<?>>();
 
+    // 用于存储远程引用服务列表
     private final ConcurrentMap<String, ReferenceBean<?>> referenceConfigs = new ConcurrentHashMap<String, ReferenceBean<?>>();
 
     public String getPackage() {
@@ -242,13 +244,19 @@ public class AnnotationBean extends AbstractConfig implements DisposableBean, Be
         return bean;
     }
 
+    /**
+     *
+     * @param reference
+     * @param referenceClass
+     * @return
+     */
     private Object refer(Reference reference, Class<?> referenceClass) { //method.getParameterTypes()[0]
         String interfaceName;
-        if (! "".equals(reference.interfaceName())) {
+        if (! "".equals(reference.interfaceName())) { // 如果在@Reference中设置interfaceName属性，则取其值，优先级最高
             interfaceName = reference.interfaceName();
-        } else if (! void.class.equals(reference.interfaceClass())) {
+        } else if (! void.class.equals(reference.interfaceClass())) { // 如果在@Reference中设置interfaceClass属性，则取其Class的getName()值，优先级其次
             interfaceName = reference.interfaceClass().getName();
-        } else if (referenceClass.isInterface()) {
+        } else if (referenceClass.isInterface()) { // 如果以上都没赋值，则取入参的referenceClass获取其接口名称
             interfaceName = referenceClass.getName();
         } else {
             throw new IllegalStateException("The @Reference undefined interfaceClass or interfaceName, and the property type " + referenceClass.getName() + " is not a interface.");
@@ -256,15 +264,20 @@ public class AnnotationBean extends AbstractConfig implements DisposableBean, Be
         String key = reference.group() + "/" + interfaceName + ":" + reference.version();
         ReferenceBean<?> referenceConfig = referenceConfigs.get(key);
         if (referenceConfig == null) {
+            //
             referenceConfig = new ReferenceBean<Object>(reference);
-            if (void.class.equals(reference.interfaceClass())
-                    && "".equals(reference.interfaceName())
-                    && referenceClass.isInterface()) {
+
+            // 如果没在Reference中设置interfaceName属性和interfaceClass属性，并且入参的referenceClass是接口
+            if (void.class.equals(reference.interfaceClass()) && "".equals(reference.interfaceName()) && referenceClass.isInterface()) {
                 referenceConfig.setInterface(referenceClass);
             }
+
             if (applicationContext != null) {
                 referenceConfig.setApplicationContext(applicationContext);
+
+                // 如果@Reference配置了registry（服务注册中心），那么实例化保存
                 if (reference.registry() != null && reference.registry().length > 0) {
+                    // 服务注册中心集合
                     List<RegistryConfig> registryConfigs = new ArrayList<RegistryConfig>();
                     for (String registryId : reference.registry()) {
                         if (registryId != null && registryId.length() > 0) {
@@ -273,6 +286,8 @@ public class AnnotationBean extends AbstractConfig implements DisposableBean, Be
                     }
                     referenceConfig.setRegistries(registryConfigs);
                 }
+
+
                 if (reference.consumer() != null && reference.consumer().length() > 0) {
                     referenceConfig.setConsumer((ConsumerConfig)applicationContext.getBean(reference.consumer(), ConsumerConfig.class));
                 }
